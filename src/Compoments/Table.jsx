@@ -4,30 +4,47 @@ import PlanetsContext from '../context/PlanetContext';
 export default function Table() {
   const { filter, setFilter } = useContext(PlanetsContext);
   const { planets, titles } = useContext(PlanetsContext);
-  const { planetsFiltered } = useContext(PlanetsContext);
-
+  const { planetsFiltered, setPlanetsFiltered } = useContext(PlanetsContext);
   const handleFilter = () => {
+    const comparisons = ['maior que', 'menor que'];
     setFilter({ ...filter, name: '' });
-    setPlanetsFiltered(
-      planets.filter((planet) => {
-        if (filter.comparison === 'maior que') {
-          return +planet[filter.column] > +filter.value;
-        }
-        if (filter.comparison === 'menor que') {
-          return +planet[filter.column] < +filter.value;
-        }
-        return +planet[filter.column] === +filter.value;
-      }),
-    );
+    if (planetsFiltered.length === 0) {
+      setPlanetsFiltered(
+        planets.filter((planet) => {
+          if (filter.comparison === comparisons[0]) {
+            return +planet[filter.column] > +filter.value;
+          }
+          if (filter.comparison === comparisons[1]) {
+            return +planet[filter.column] < +filter.value;
+          }
+          return +planet[filter.column] === +filter.value;
+        }),
+      );
+    } else {
+      setPlanetsFiltered(
+        planetsFiltered.filter((planet) => {
+          if (filter.comparison === comparisons[0]) {
+            return +planet[filter.column] > +filter.value;
+          }
+          if (filter.comparison === comparisons[1]) {
+            return +planet[filter.column] < +filter.value;
+          }
+          return +planet[filter.column] === +filter.value;
+        }),
+      );
+    }
   };
-
   return (
     <div>
       <div>
         <input
           type="text"
           data-testid="name-filter"
-          onChange={ ({ target }) => setFilter(target.value) }
+          value={ filter.name }
+          onChange={ ({ target }) => {
+            setFilter({ ...filter, name: target.value });
+            setPlanetsFiltered([]);
+          } }
         />
       </div>
       <div>

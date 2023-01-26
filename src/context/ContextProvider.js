@@ -40,6 +40,11 @@ export default function ContextProvider({ children }) {
     };
     fetchPlanets();
   }, [planets]);
+  const [comparisonRender, setComparisonRender] = useState([
+    'maior que',
+    'menor que',
+    'igual a',
+  ]);
 
   const values = useMemo(() => ({
     planets,
@@ -50,7 +55,10 @@ export default function ContextProvider({ children }) {
     setFilter,
     planetsFiltered,
     setPlanetsFiltered,
-  }), [planets, titles, filter, setFilter, planetsFiltered, setPlanetsFiltered]);
+    comparisonRender,
+    setComparisonRender,
+  }), [planets, titles, filter, setFilter, planetsFiltered, setPlanetsFiltered,
+    comparisonRender]);
   return (
     <PlanetsContext.Provider value={ values }>
       { children }
