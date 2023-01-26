@@ -19,6 +19,7 @@ export default function ContextProvider({ children }) {
     'Edited',
     'URL',
   ]);
+  const [filter, setFilter] = useState('');
   useEffect(() => {
     const fetchPlanets = async () => {
       const url = 'https://swapi.dev/api/planets';
@@ -38,7 +39,9 @@ export default function ContextProvider({ children }) {
     setPlanets,
     titles,
     setTitles,
-  }), [planets, titles]);
+    filter,
+    setFilter,
+  }), [planets, titles, filter, setFilter]);
   return (
     <PlanetsContext.Provider value={ values }>
       { children }
