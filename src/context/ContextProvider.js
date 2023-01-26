@@ -3,6 +3,13 @@ import PropTypes from 'prop-types';
 import PlanetsContext from './PlanetContext';
 
 export default function ContextProvider({ children }) {
+  const [filter, setFilter] = useState({
+    name: '',
+    column: 'population',
+    comparison: 'maior que',
+    value: '0',
+  });
+  const [planetsFiltered, setPlanetsFiltered] = useState([]);
   const [planets, setPlanets] = useState([]);
   const [titles, setTitles] = useState([
     'Name',
@@ -19,7 +26,6 @@ export default function ContextProvider({ children }) {
     'Edited',
     'URL',
   ]);
-  const [filter, setFilter] = useState('');
   useEffect(() => {
     const fetchPlanets = async () => {
       const url = 'https://swapi.dev/api/planets';
@@ -34,6 +40,7 @@ export default function ContextProvider({ children }) {
     };
     fetchPlanets();
   }, [planets]);
+
   const values = useMemo(() => ({
     planets,
     setPlanets,
@@ -41,7 +48,9 @@ export default function ContextProvider({ children }) {
     setTitles,
     filter,
     setFilter,
-  }), [planets, titles, filter, setFilter]);
+    planetsFiltered,
+    setPlanetsFiltered,
+  }), [planets, titles, filter, setFilter, planetsFiltered, setPlanetsFiltered]);
   return (
     <PlanetsContext.Provider value={ values }>
       { children }
