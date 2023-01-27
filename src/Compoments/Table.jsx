@@ -2,38 +2,13 @@ import React, { useContext } from 'react';
 import PlanetsContext from '../context/PlanetContext';
 
 export default function Table() {
-  const { filter, setFilter } = useContext(PlanetsContext);
-  const { planets, titles } = useContext(PlanetsContext);
-  const { planetsFiltered, setPlanetsFiltered } = useContext(PlanetsContext);
-  const handleFilter = () => {
-    const comparisons = ['maior que', 'menor que'];
-    setFilter({ ...filter, name: '' });
-    if (planetsFiltered.length === 0) {
-      setPlanetsFiltered(
-        planets.filter((planet) => {
-          if (filter.comparison === comparisons[0]) {
-            return +planet[filter.column] > +filter.value;
-          }
-          if (filter.comparison === comparisons[1]) {
-            return +planet[filter.column] < +filter.value;
-          }
-          return +planet[filter.column] === +filter.value;
-        }),
-      );
-    } else {
-      setPlanetsFiltered(
-        planetsFiltered.filter((planet) => {
-          if (filter.comparison === comparisons[0]) {
-            return +planet[filter.column] > +filter.value;
-          }
-          if (filter.comparison === comparisons[1]) {
-            return +planet[filter.column] < +filter.value;
-          }
-          return +planet[filter.column] === +filter.value;
-        }),
-      );
-    }
-  };
+  const { filter, setFilter,
+    planets, titles,
+    planetsFiltered, setPlanetsFiltered,
+    handleFilter,
+    filterByValue,
+    columnOptions,
+  } = useContext(PlanetsContext);
   return (
     <div>
       <div>
@@ -51,24 +26,36 @@ export default function Table() {
         <label htmlFor="column-filter">
           Columns
           <select
-            name="column-filter"
             id="column-filter"
-            value={ filter.column }
+            name="column-filter"
             data-testid="column-filter"
+            value={ filter.column }
             onChange={ ({ target }) => setFilter({ ...filter, column: target.value }) }
           >
-            <option value="population">population</option>
-            <option value="orbital_period">orbital_period</option>
-            <option value="diameter">diameter</option>
-            <option value="rotation_period">rotation_period</option>
-            <option value="surface_water">surface_water</option>
+            {filterByValue.length === 0
+              ? columnOptions.map((columnFilter) => (
+                <option key={ columnFilter } value={ `${columnFilter}` }>
+                  {columnFilter}
+                </option>
+              ))
+              : columnOptions
+                .filter(
+                  (columnOption) => !filterByValue
+                    .map((filterValue) => filterValue.column)
+                    .includes(columnOption),
+                )
+                .map((columnFilter) => (
+                  <option key={ columnFilter } value={ `${columnFilter}` }>
+                    {columnFilter}
+                  </option>
+                ))}
           </select>
         </label>
         <label htmlFor="comparison-filter">
           Operador
           <select
-            name="comparison-filter"
             id="comparison-filter"
+            name="comparison-filter"
             value={ filter.comparison }
             data-testid="comparison-filter"
             onChange={ ({ target }) => (
@@ -86,8 +73,8 @@ export default function Table() {
           onChange={ ({ target }) => setFilter({ ...filter, value: target.value }) }
         />
         <button
-          type="button"
           data-testid="button-filter"
+          type="button"
           onClick={ handleFilter }
         >
           Filtrar
@@ -105,36 +92,36 @@ export default function Table() {
               .filter(({ name }) => name.includes(filter.name))
               .map((planet) => (
                 <tr key={ planet.name }>
-                  <th>{planet.name}</th>
-                  <th>{planet.rotation_period}</th>
-                  <th>{planet.orbital_period}</th>
-                  <th>{planet.diameter}</th>
-                  <th>{planet.climate}</th>
-                  <th>{planet.gravity}</th>
-                  <th>{planet.terrain}</th>
-                  <th>{planet.surface_water}</th>
-                  <th>{planet.population}</th>
-                  <th>{planet.films}</th>
-                  <th>{planet.created}</th>
-                  <th>{planet.edited}</th>
-                  <th>{planet.url}</th>
+                  <td>{planet.name}</td>
+                  <td>{planet.rotation_period}</td>
+                  <td>{planet.orbital_period}</td>
+                  <td>{planet.diameter}</td>
+                  <td>{planet.climate}</td>
+                  <td>{planet.gravity}</td>
+                  <td>{planet.terrain}</td>
+                  <td>{planet.surface_water}</td>
+                  <td>{planet.population}</td>
+                  <td>{planet.films}</td>
+                  <td>{planet.created}</td>
+                  <td>{planet.edited}</td>
+                  <td>{planet.url}</td>
                 </tr>
               ))
             : planetsFiltered.map((planet) => (
               <tr key={ planet.name }>
-                <th>{planet.name}</th>
-                <th>{planet.rotation_period}</th>
-                <th>{planet.orbital_period}</th>
-                <th>{planet.diameter}</th>
-                <th>{planet.climate}</th>
-                <th>{planet.gravity}</th>
-                <th>{planet.terrain}</th>
-                <th>{planet.surface_water}</th>
-                <th>{planet.population}</th>
-                <th>{planet.films}</th>
-                <th>{planet.created}</th>
-                <th>{planet.edited}</th>
-                <th>{planet.url}</th>
+                <td>{planet.name}</td>
+                <td>{planet.rotation_period}</td>
+                <td>{planet.orbital_period}</td>
+                <td>{planet.diameter}</td>
+                <td>{planet.climate}</td>
+                <td>{planet.gravity}</td>
+                <td>{planet.terrain}</td>
+                <td>{planet.surface_water}</td>
+                <td>{planet.population}</td>
+                <td>{planet.films}</td>
+                <td>{planet.created}</td>
+                <td>{planet.edited}</td>
+                <td>{planet.url}</td>
               </tr>
             ))}
         </tbody>
