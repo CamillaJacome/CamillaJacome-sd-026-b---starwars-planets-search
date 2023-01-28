@@ -40,7 +40,7 @@ export default function ContextProvider({ children }) {
       setPlanets(planetsList);
     };
     fetchPlanets();
-  }, [planets]);
+  }, [setPlanets]);
   const handleFilter = () => {
     setFilterByValue([
       ...filterByValue,
@@ -50,39 +50,69 @@ export default function ContextProvider({ children }) {
         value: filter.value,
       },
     ]);
-    const comparisons = ['maior que', 'menor que'];
-    setFilter({ ...filter, name: '' });
-    if (planetsFiltered.length === 0) {
-      setPlanetsFiltered(
-        planets.filter((planet) => {
-          if (filter.comparison === comparisons[0]) {
-            return +planet[filter.column] > +filter.value;
-          }
-          if (filter.comparison === comparisons[1]) {
-            return +planet[filter.column] < +filter.value;
-          }
-          return +planet[filter.column] === +filter.value;
-        }),
-      );
-    } else {
-      setPlanetsFiltered(
-        planetsFiltered.filter((planet) => {
-          if (filter.comparison === comparisons[0]) {
-            return +planet[filter.column] > +filter.value;
-          }
-          if (filter.comparison === comparisons[1]) {
-            return +planet[filter.column] < +filter.value;
-          }
-          return +planet[filter.column] === +filter.value;
-        }),
-      );
-    }
+    setPlanets(
+      planets.filter((planet) => {
+        if (filter.comparison === 'maior que') {
+          return +planet[filter.column] > +filter.value;
+        }
+        if (filter.comparison === 'menor que') {
+          return +planet[filter.column] < +filter.value;
+        }
+        return +planet[filter.column] === +filter.value;
+      }),
+    );
     setFilter({
       name: '',
       column: 'population',
       comparison: 'maior que',
       value: '0',
     });
+  };
+  const [order, setOrder] = useState({ column: 'population', sort: 'ASC' });
+
+  const handleSort = () => {
+    if (order.column === 'surface_water' || order.column === 'population') {
+      if (order.sort === 'ASC') {
+        setPlanets([
+          ...planets
+            .filter((planet) => planet[order.column] !== 'unknown')
+            .sort((a, b) => a[order.column] - b[order.column]),
+          ...planets.filter((planet) => planet[order.column] === 'unknown'),
+        ]);
+        setOrder({
+          column: 'population',
+          sort: 'ASC',
+        });
+      }
+      if (order.sort === 'DESC') {
+        setPlanets([
+          ...planets
+            .filter((planet) => planet[order.column] !== 'unknown')
+            .sort((a, b) => b[order.column] - a[order.column]),
+          ...planets.filter((planet) => planet[order.column] === 'unknown'),
+        ]);
+        setOrder({
+          column: 'population',
+          sort: 'ASC',
+        });
+      }
+    }
+    if (order.column !== 'surface_water' && order.column !== 'population') {
+      if (order.sort === 'ASC') {
+        setPlanets(planets.sort((a, b) => a[order.column] - b[order.column]));
+        setOrder({
+          column: 'population',
+          sort: 'ASC',
+        });
+      }
+      if (order.sort === 'DESC') {
+        setPlanets(planets.sort((a, b) => b[order.column] - a[order.column]));
+        setOrder({
+          column: 'population',
+          sort: 'ASC',
+        });
+      }
+    }
   };
   const columnOptions = [
     'population',
@@ -104,9 +134,12 @@ export default function ContextProvider({ children }) {
     columnOptions,
     setFilterByValue,
     filterByValue,
+    handleSort,
+    order,
+    setOrder,
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }), [planets, titles, filter, setFilter, planetsFiltered,
-    setPlanetsFiltered, filterByValue, columnOptions]);
+    setPlanetsFiltered, filterByValue, columnOptions, order, setOrder]);
   return (
     <PlanetsContext.Provider value={ values }>
       { children }

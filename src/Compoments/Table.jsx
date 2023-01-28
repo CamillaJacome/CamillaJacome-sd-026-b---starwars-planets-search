@@ -8,6 +8,9 @@ export default function Table() {
     handleFilter,
     filterByValue,
     columnOptions,
+    order,
+    setOrder,
+    handleSort,
   } = useContext(PlanetsContext);
   return (
     <div>
@@ -79,6 +82,47 @@ export default function Table() {
         >
           Filtrar
         </button>
+        <select
+          name="column-sort"
+          id="column-sort"
+          data-testid="column-sort"
+          onChange={ ({ target }) => setOrder({ ...order, column: target.value }) }
+        >
+          <option value="population">population</option>
+          <option value="orbital_period">orbital_period</option>
+          <option value="diameter">diameter</option>
+          <option value="rotation_period">rotation_period</option>
+          <option value="surface_water">surface_water</option>
+        </select>
+        <label htmlFor="column-sort-input-asc">
+          ASC
+          <input
+            type="radio"
+            id="column-sort-input-asc"
+            data-testid="column-sort-input-asc"
+            value="ASC"
+            checked={ order.sort === 'ASC' }
+            onChange={ () => setOrder({ ...order, sort: 'ASC' }) }
+          />
+        </label>
+        <label htmlFor="column-sort-input-desc">
+          DESC
+          <input
+            type="radio"
+            id="column-sort-input-desc"
+            data-testid="column-sort-input-desc"
+            value="DESC"
+            checked={ order.sort === 'DESC' }
+            onChange={ () => setOrder({ ...order, sort: 'DESC' }) }
+          />
+        </label>
+        <button
+          type="button"
+          data-testid="column-sort-button"
+          onClick={ handleSort }
+        >
+          Ordenar
+        </button>
       </div>
       <table>
         <thead>
@@ -92,7 +136,7 @@ export default function Table() {
               .filter(({ name }) => name.includes(filter.name))
               .map((planet) => (
                 <tr key={ planet.name }>
-                  <td>{planet.name}</td>
+                  <td data-testid="planet-name">{planet.name}</td>
                   <td>{planet.rotation_period}</td>
                   <td>{planet.orbital_period}</td>
                   <td>{planet.diameter}</td>
@@ -109,7 +153,7 @@ export default function Table() {
               ))
             : planetsFiltered.map((planet) => (
               <tr key={ planet.name }>
-                <td>{planet.name}</td>
+                <td data-testid="planet-filtered">{planet.name}</td>
                 <td>{planet.rotation_period}</td>
                 <td>{planet.orbital_period}</td>
                 <td>{planet.diameter}</td>
