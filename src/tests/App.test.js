@@ -49,7 +49,10 @@ describe('', () => {
     expect(Naboo).toBeInTheDocument();
   });
   test('se o filtro maior que funciona', async () => { 
-    render(<App />);
+    // render(<App />);
+    await act(async () => {
+      render(<App />);
+    });
     const valueInput = screen.getByTestId('value-filter');
     const buttonFilter = screen.getByTestId('button-filter');
     userEvent.selectOptions(
@@ -63,15 +66,18 @@ describe('', () => {
     );
     userEvent.type(valueInput, '100000000000')
     userEvent.click(buttonFilter);
-    const Coruscant = await screen.findByRole('cell', {name: /Coruscant/i});
-    expect(Coruscant).toBeInTheDocument();
-    // const result = screen.getByTestId('planet-name');
-    // expect(result.innerHTML).toBe('Coruscant');
+    // const Coruscant = await screen.findByRole('cell', {name: /Coruscant/i});
+   // expect(Coruscant).toBeInTheDocument();
+    const cell = screen.getByTestId('planet-name');
+    expect(cell.innerHTML).toBe('Coruscant');
    });
    test('se o filtro menor que funciona', async () => {
-    render(<App />);
+    // render(<App />);
     // act(() => render(<App />));
     // await act(async () => render(<App />));
+    await act(async () => {
+      render(<App />);
+    });
     const valueInput = screen.getByTestId('value-filter');
     const buttonFilter = screen.getByTestId('button-filter');
     act(()=> {
@@ -87,9 +93,63 @@ describe('', () => {
     userEvent.type(valueInput, '200000');
     userEvent.click(buttonFilter);
     })
-    const YavinIV = await screen.findByRole('cell', {name: /Yavin IV/i});
-    expect(YavinIV).toBeInTheDocument();
-    
+    // const YavinIV = await screen.findByRole('cell', {name: /Yavin IV/i});
+    // expect(YavinIV).toBeInTheDocument();
+    const cell = screen.getByTestId('planet-name');
+    expect(cell.innerHTML).toBe('Yavin IV');
   });
-  
 } );
+describe('testa a ordenação',() => {
+  beforeEach(() => {
+    jest.spyOn(global, "fetch").mockResolvedValue({
+      json: jest.fn().mockResolvedValue(testData),
+    });
+  });
+  test('se existe os inputs de ornenação', async () => { 
+    await act(async () => {
+      render(<App />);
+    });
+    const inputOptions = screen.getByTestId('column-sort');
+    const inputASC = screen.getByTestId('column-sort-input-asc');
+    const inputDESC =  screen.getByTestId('column-sort-input-desc');
+    expect(inputOptions).toBeInTheDocument();
+    expect(inputASC).toBeInTheDocument();
+    expect(inputDESC).toBeInTheDocument();
+  });
+  test('se ordena de forma asc', async() => { 
+    await act(async () => {
+      render(<App />);
+    });
+    const inputASC = screen.getByTestId('column-sort-input-asc');
+    const button = screen.getByTestId('column-sort-button');
+    userEvent.selectOptions(
+      screen.getByTestId('column-sort'),
+      screen.getAllByText(/population/i)[1],
+    ); 
+    userEvent.click(inputASC);
+    userEvent.click(button);
+    // const firstElement = await screen.findAllByRole('cell', {name: /Yavin IV/i});
+    const firstElement = await screen.findAllByRole('cell');
+    // console.log(typeof firstElement);
+    expect(firstElement[0].innerHTML).toBe('Yavin IV');
+    
+   });
+   test('se ordena de forma desc', async() => { 
+    await act(async () => {
+      render(<App />);
+    });
+    const inputASC = screen.getByTestId('column-sort-input-desc');
+    const button = screen.getByTestId('column-sort-button');
+    userEvent.selectOptions(
+      screen.getByTestId('column-sort'),
+      screen.getAllByText(/population/i)[1],
+    ); 
+    userEvent.click(inputASC);
+    userEvent.click(button);
+    // const firstElement = await screen.findAllByRole('cell', {name: /Yavin IV/i});
+    const firstElement = await screen.findAllByRole('cell');
+    // console.log(typeof firstElement);
+    expect(firstElement[0].innerHTML).toBe('Coruscant');
+    
+   });
+});
